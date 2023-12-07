@@ -27,6 +27,7 @@ Have fun :)"""
         self.__jokes = jokes_array
         self.__change_language_message = "No problem."
         self.__error_message = f"Invalid input please enter a number in the range 1 to {len(jokes_array)} or request to change language."
+        self.__error_change_language = "Invalid llanguage check if you spelled it well."
         self.__translator = translate(api_key= telegram_bot.__TRANSATOR_API_KEY, endpoint= telegram_bot.__TRANSLATOR_ENDPOINT, location= telegram_bot.__TRANSLATOR_LOCATION)
 
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -40,13 +41,14 @@ Have fun :)"""
 
     def handle_response(self, message: str) -> str:
 
-        if len(message.split()) == 3 and 'set language' in message:
+        if len(message.split()) == 3 and 'set language' in message.lower():
             message_array = message.split()
-            result = self.__translator.translate(self.__change_language_message, message_array[2])
-            if result is not None:
+            if self.__translator.check_if_language_in_iso(message_array[2]):
+                result = self.__translator.translate(self.__change_language_message, message_array[2])
                 self.__language = message_array[2]
                 return result
-            return self.__error_message 
+            else:
+                return self.__error_change_language
 
         if message.isnumeric() and int(message) > 0 and int(message) < len(self.__jokes):
             return self.__translator.translate(f"{message}.  {self.__jokes[int(message) - 1]}", self.__language)
@@ -79,6 +81,7 @@ Have fun :)"""
 
     def starting_bot(self):
         print('Starting bot')
+
         app = Application.builder().token(self.__token).build()
 
         #commands

@@ -1,6 +1,6 @@
 
 import requests, uuid, json
-from iso639.iso639 import _Language
+from iso639 import Lang
 
 class translate:
     """
@@ -12,17 +12,24 @@ class translate:
         self.endpoint = endpoint
         self.location = location
 
+
+    def check_if_language_in_iso(self, language:str) -> bool:
+        try:
+            converted_to_iso = Lang(language.title())
+            return converted_to_iso is not None
+        except:
+            return False
+
+
     def convert_to_langauage_code(self, language: str):
         try:
-            converted_to_iso = _Language(language.title())
+            converted_to_iso = Lang(language.title())
             return converted_to_iso.pt1 if converted_to_iso is not None else None
-        except ValueError:
+        except:
             return None
 
     def translate(self, message: str, target_language: str) -> str:
         if not target_language.__eq__("english"):
-            print("target len " , target_language )
-
             path = '/translate'
             constructed_url = self.endpoint + path
             params = {
