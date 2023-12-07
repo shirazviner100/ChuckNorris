@@ -1,4 +1,5 @@
 iso-639
+iso639-lang
 python-telegram-bot
 selenium
 Flask
